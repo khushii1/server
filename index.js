@@ -29,33 +29,54 @@ app.get('/',(req,res)=>{
 app.use("/user",useRoutes)
 app.use("/questions",questionRoutes)
 app.use("/answer", answerRoutes);
-app.patch("/planupdate",async(req, res) => {
+app.put("/planupdate",async(req, res) => {
   const plan = req.body;
   const userId = req.userId;
   const email = req.body.email;
 
-      
- 
-  
-
-
-
- const postQuestion = new plans({ ...plan, userId });
-  try {
+   
+   /*try {
     const existinguser = await plans.findOne({ email });
     if (existinguser) {
       plans.deleteOne({ email : email });
       res.status(200).json("Deleted successfully");
     }
     else{
-    await postQuestion.save();
-    res.status(200).json("Posted a question successfully");
+        existinguser = new plans({ ...plan, userId });
+   await existinguser.save();
+   res.status(200).json("Posted a question successfully");
+ 
     }
   } catch (error) {
     console.log(error);
     res.status(409).json("Couldn't post a new question");
   }
 
+*/
+const filter = { email:  email};
+const update = { plan : plan } ;
+try {
+  //const existinguser = await plans.findOne({ email });
+
+ let existinguser = await plans.findOne({ email });
+  if (existinguser) {
+    existinguser = await plans.updateOne({email : email},{plan : req.body.plan });
+    // existinguser = update.plan;
+    //await existinguser.save();
+
+    console.log(update)
+    res.status(200).json({existinguser});
+    }
+  else{
+      existinguser = new plans({ ...plan, userId });
+      await existinguser.save(); 
+     res.status(200).json("Posted a PLAN successfully");
+
+  }
+} catch (error) {
+  console.log(error);
+  res.status(409).json("Couldn't post a PLAN");
+}
 
 
 
